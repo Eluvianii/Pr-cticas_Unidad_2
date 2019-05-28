@@ -1,0 +1,256 @@
+MySQL Shell 8.0.12
+
+Copyright (c) 2016, 2018, Oracle and/or its affiliates. All rights reserved.
+
+Oracle is a registered trademark of Oracle Corporation and/or its
+affiliates. Other names may be trademarks of their respective
+owners.
+
+Type '\help' or '\?' for help; '\quit' to exit.
+
+
+ MySQL  JS > \connect root@localhost
+Creating a session to 'root@localhost'
+Please provide the password for 'root@localhost': ****
+Save password for 'root@localhost'? [Y]es/[N]o/Ne[v]er (default No): n
+Fetching schema names for autocompletion... Press ^C to stop.
+Your MySQL connection id is 8 (X protocol)
+Server version: 8.0.12 MySQL Community Server - GPL
+No default schema selected; type \use <schema> to set one.
+
+ MySQL  localhost:33060+ ssl  JS > \sql
+Switching to SQL mode... Commands end with ;
+
+ MySQL  localhost:33060+ ssl  SQL > use sakila
+Default schema set to `sakila`.
+Fetching table and column names from `sakila` for auto-completion... Press ^C to stop.
+
+ MySQL  localhost:33060+ ssl  sakila  SQL > create table tablaa(id int primary_key, nombre varchar(50) not null);
+ERROR: 1064: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'primary_key, nombre varchar(50) not null)' at line 1
+
+ MySQL  localhost:33060+ ssl  sakila  SQL > create table tablaa(id int primary, nombre varchar(50) not null);
+ERROR: 1064: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near ', nombre varchar(50) not null)' at line 1
+
+ MySQL  localhost:33060+ ssl  sakila  SQL > create table tablaa(id int key, nombre varchar(50) not null);
+Query OK, 0 rows affected (0.8840 sec)
+
+ MySQL  localhost:33060+ ssl  sakila  SQL > create table tablab(id int key, nombre varchar(50) not null);
+Query OK, 0 rows affected (1.4194 sec)
+
+ MySQL  localhost:33060+ ssl  sakila  SQL > select A.nombre, B.nombre as nombreB from tablaa A inner join tablab B on A.nombre=b.nombre;
+Empty set (0.0050 sec)
+
+ MySQL  localhost:33060+ ssl  sakila  SQL > alter table tablaa add values(1,nombre);
+ERROR: 1064: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'values(1,nombre)' at line 1
+
+ MySQL  localhost:33060+ ssl  sakila  SQL > insert into tablaa values(1,nombre);
+Query OK, 1 row affected (0.1546 sec)
+
+ MySQL  localhost:33060+ ssl  sakila  SQL > delete from tablaa wher id=1;
+ERROR: 1064: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'wher id=1' at line 1
+
+ MySQL  localhost:33060+ ssl  sakila  SQL > drop from tablaa where id=1;
+ERROR: 1064: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'from tablaa where id=1' at line 1
+
+ MySQL  localhost:33060+ ssl  sakila  SQL > insert into tablaa values(1,A),(2,B),(3,C),(4,D),(5,E);
+ERROR: 1054: Unknown column 'A' in 'field list'
+
+ MySQL  localhost:33060+ ssl  sakila  SQL > insert into tablaa values(1,A),(2,B),(3,C),(4,D),(5,E);
+ERROR: 1054: Unknown column 'A' in 'field list'
+
+ MySQL  localhost:33060+ ssl  sakila  SQL > insert into tablaa values(2,B),(3,C),(4,D),(5,E);
+ERROR: 1054: Unknown column 'B' in 'field list'
+
+ MySQL  localhost:33060+ ssl  sakila  SQL > insert into tablaa values(2,'A'),(3,'B'),(4,'C'),(5,'D'),(6,'E');
+Query OK, 5 rows affected (0.3250 sec)
+
+ MySQL  localhost:33060+ ssl  sakila  SQL > insert into tablab values(1,'A'),(2,'B'),(3,'X'),(4,'Y');
+Query OK, 4 rows affected (0.1357 sec)
+
+ MySQL  localhost:33060+ ssl  sakila  SQL > select A.nombre, B.nombre as nombreB from tablaa A inner join tablab B on A.nombre=b.nombre;
++--------+---------+
+| nombre | nombreB |
++--------+---------+
+| A      | A       |
+| B      | B       |
++--------+---------+
+2 rows in set (0.0006 sec)
+
+ MySQL  localhost:33060+ ssl  sakila  SQL > select A.nombre as nombreA, B.nombre as nombreB from tablaa A left outer join tablaB B on a.nombre=b.nombre;;
++---------+---------+
+| nombreA | nombreB |
++---------+---------+
+| A       | A       |
+| B       | B       |
+|         | NULL    |
+| C       | NULL    |
+| D       | NULL    |
+| E       | NULL    |
++---------+---------+
+6 rows in set (0.0008 sec)
+
+                                        ... ;
+ERROR: 1065: Query was empty
+
+ MySQL  localhost:33060+ ssl  sakila  SQL > desc customer_id;
+ERROR: 1146: Table 'sakila.customer_id' doesn't exist
+
+ MySQL  localhost:33060+ ssl  sakila  SQL > show tables;
++----------------------------+
+| Tables_in_sakila           |
++----------------------------+
+| actor                      |
+| actor_info                 |
+| address                    |
+| category                   |
+| city                       |
+| country                    |
+| customer                   |
+| customer_list              |
+| film                       |
+| film_actor                 |
+| film_category              |
+| film_list                  |
+| film_text                  |
+| inventory                  |
+| language                   |
+| nicer_but_slower_film_list |
+| payment                    |
+| rental                     |
+| sales_by_film_category     |
+| sales_by_store             |
+| staff                      |
+| staff_list                 |
+| store                      |
+| tablaa                     |
+| tablab                     |
++----------------------------+
+25 rows in set (0.0172 sec)
+
+ MySQL  localhost:33060+ ssl  sakila  SQL > desc customer;
++-------------+----------------------+------+-----+-------------------+-----------------------------+
+| Field       | Type                 | Null | Key | Default           | Extra                       |
++-------------+----------------------+------+-----+-------------------+-----------------------------+
+| customer_id | smallint(5) unsigned | NO   | PRI | NULL              | auto_increment              |
+| store_id    | tinyint(3) unsigned  | NO   | MUL | NULL              |                             |
+| first_name  | varchar(45)          | NO   |     | NULL              |                             |
+| last_name   | varchar(45)          | NO   | MUL | NULL              |                             |
+| email       | varchar(50)          | YES  |     | NULL              |                             |
+| address_id  | smallint(5) unsigned | NO   | MUL | NULL              |                             |
+| active      | tinyint(1)           | NO   |     | 1                 |                             |
+| create_date | datetime             | NO   |     | NULL              |                             |
+| last_update | timestamp            | YES  |     | CURRENT_TIMESTAMP | on update CURRENT_TIMESTAMP |
++-------------+----------------------+------+-----+-------------------+-----------------------------+
+9 rows in set (0.0017 sec)
+
+ MySQL  localhost:33060+ ssl  sakila  SQL > desc rental;
++--------------+-----------------------+------+-----+-------------------+-----------------------------+
+| Field        | Type                  | Null | Key | Default           | Extra                       |
++--------------+-----------------------+------+-----+-------------------+-----------------------------+
+| rental_id    | int(11)               | NO   | PRI | NULL              | auto_increment              |
+| rental_date  | datetime              | NO   | MUL | NULL              |                             |
+| inventory_id | mediumint(8) unsigned | NO   | MUL | NULL              |                             |
+| customer_id  | smallint(5) unsigned  | NO   | MUL | NULL              |                             |
+| return_date  | datetime              | YES  |     | NULL              |                             |
+| staff_id     | tinyint(3) unsigned   | NO   | MUL | NULL              |                             |
+| last_update  | timestamp             | NO   |     | CURRENT_TIMESTAMP | on update CURRENT_TIMESTAMP |
++--------------+-----------------------+------+-----+-------------------+-----------------------------+
+7 rows in set (0.0015 sec)
+
+ MySQL  localhost:33060+ ssl  sakila  SQL > select count(*) from customer;
++----------+
+| count(*) |
++----------+
+|      599 |
++----------+
+1 row in set (0.0947 sec)
+
+ MySQL  localhost:33060+ ssl  sakila  SQL > select count(*) from customer where customer.customer_id=rental.customer_id;
+ERROR: 1054: Unknown column 'rental.customer_id' in 'where clause'
+
+ MySQL  localhost:33060+ ssl  sakila  SQL > select count(*) from customer where customer_id in(select distinct(cistomer_id) from rental);
+ERROR: 1054: Unknown column 'cistomer_id' in 'field list'
+
+ MySQL  localhost:33060+ ssl  sakila  SQL > select count(*) from customer where customer_id in(select distinct(customer_id) from rental);
++----------+
+| count(*) |
++----------+
+|      599 |
++----------+
+1 row in set (0.0805 sec)
+
+ MySQL  localhost:33060+ ssl  sakila  SQL > select count(distinct(customer_id)) from rental;
++------------------------------+
+| count(distinct(customer_id)) |
++------------------------------+
+|                          599 |
++------------------------------+
+1 row in set (0.0413 sec)
+
+ MySQL  localhost:33060+ ssl  sakila  SQL > desc customer;
++-------------+----------------------+------+-----+-------------------+-----------------------------+
+| Field       | Type                 | Null | Key | Default           | Extra                       |
++-------------+----------------------+------+-----+-------------------+-----------------------------+
+| customer_id | smallint(5) unsigned | NO   | PRI | NULL              | auto_increment              |
+| store_id    | tinyint(3) unsigned  | NO   | MUL | NULL              |                             |
+| first_name  | varchar(45)          | NO   |     | NULL              |                             |
+| last_name   | varchar(45)          | NO   | MUL | NULL              |                             |
+| email       | varchar(50)          | YES  |     | NULL              |                             |
+| address_id  | smallint(5) unsigned | NO   | MUL | NULL              |                             |
+| active      | tinyint(1)           | NO   |     | 1                 |                             |
+| create_date | datetime             | NO   |     | NULL              |                             |
+| last_update | timestamp            | YES  |     | CURRENT_TIMESTAMP | on update CURRENT_TIMESTAMP |
++-------------+----------------------+------+-----+-------------------+-----------------------------+
+9 rows in set (0.0022 sec)
+
+ MySQL  localhost:33060+ ssl  sakila  SQL > select * from store;
++----------+------------------+------------+---------------------+
+| store_id | manager_staff_id | address_id | last_update         |
++----------+------------------+------------+---------------------+
+|        1 |                1 |          1 | 2006-02-15 04:57:12 |
+|        2 |                2 |          2 | 2006-02-15 04:57:12 |
++----------+------------------+------------+---------------------+
+2 rows in set (0.0177 sec)
+
+ MySQL  localhost:33060+ ssl  sakila  SQL > insert into customer(first_name,last_name,store_id) values('Eluviani','Fernandez',1);
+ERROR: 1364: Field 'address_id' doesn't have a default value
+
+ MySQL  localhost:33060+ ssl  sakila  SQL > select count(*) from address;
++----------+
+| count(*) |
++----------+
+|      603 |
++----------+
+1 row in set (0.0404 sec)
+
+ MySQL  localhost:33060+ ssl  sakila  SQL > select adress_id from address limit 5;
+ERROR: 1054: Unknown column 'adress_id' in 'field list'
+
+ MySQL  localhost:33060+ ssl  sakila  SQL > select address_id from address limit 5;
++------------+
+| address_id |
++------------+
+|         56 |
+|        105 |
+|        457 |
+|        491 |
+|        332 |
++------------+
+5 rows in set (0.0010 sec)
+
+ MySQL  localhost:33060+ ssl  sakila  SQL > insert into customer(first_name,last_name,store_id,address_id) values('Eluviani','Fernandez',1,56);
+Query OK, 1 row affected (0.1158 sec)
+
+ MySQL  localhost:33060+ ssl  sakila  SQL > insert into customer(first_name,last_name,store_id,address_id) values('Gerardo','Cortez',1,56);
+Query OK, 1 row affected (0.0724 sec)
+
+ MySQL  localhost:33060+ ssl  sakila  SQL > select count(*) from customer where customer_id not in(select distinct(customer_id) from rental));
+ERROR: 1064: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near ')' at line 1
+
+ MySQL  localhost:33060+ ssl  sakila  SQL > select count(*) from customer where customer_id not in(select distinct(customer_id) from rental);
++----------+
+| count(*) |
++----------+
+|        2 |
++----------+
+1 row in set (0.0206 sec)

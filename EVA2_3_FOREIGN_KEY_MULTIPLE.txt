@@ -1,0 +1,167 @@
+MySQL Shell 8.0.12
+
+Copyright (c) 2016, 2018, Oracle and/or its affiliates. All rights reserved.
+
+Oracle is a registered trademark of Oracle Corporation and/or its
+affiliates. Other names may be trademarks of their respective
+owners.
+
+Type '\help' or '\?' for help; '\quit' to exit.
+
+
+ MySQL  JS > \connect -mc root@localhost
+Creating a Classic session to 'root@localhost'
+Please provide the password for 'root@localhost': ****
+MySQL Error 1045 (28000): Access denied for user 'root'@'localhost' (using password: YES)
+
+ MySQL  JS > \connect -mc root@localhost:3307
+Creating a Classic session to 'root@localhost:3307'
+Please provide the password for 'root@localhost:3307': ****
+Save password for 'root@localhost:3307'? [Y]es/[N]o/Ne[v]er (default No): n
+Fetching schema names for autocompletion... Press ^C to stop.
+Your MySQL connection id is 8
+Server version: 8.0.12 MySQL Community Server - GPL
+No default schema selected; type \use <schema> to set one.
+
+ MySQL  localhost:3307 ssl  JS > \sql
+Switching to SQL mode... Commands end with ;
+
+ MySQL  localhost:3307 ssl  SQL > use sakila
+Default schema set to `sakila`.
+Fetching table and column names from `sakila` for auto-completion... Press ^C to stop.
+
+ MySQL  localhost:3307 ssl  sakila  SQL > create table master_2(id_master int key auto_increment, id_2 varchar(50) key);
+ERROR: 1068 (42000): Multiple primary key defined
+
+ MySQL  localhost:3307 ssl  sakila  SQL > create table master_2(id_master int, nombre varchar(10), primary key(id_master, nombre));
+Query OK, 0 rows affected (1.6672 sec)
+
+ MySQL  localhost:3307 ssl  sakila  SQL > show create table master_2;
++----------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| Table    | Create Table                                                                                                                                                                                       |
++----------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| master_2 | CREATE TABLE `master_2` (
+  `id_master` int(11) NOT NULL,
+  `nombre` varchar(10) NOT NULL,
+  PRIMARY KEY (`id_master`,`nombre`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci |
++----------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+1 row in set (0.1844 sec)
+
+ MySQL  localhost:3307 ssl  sakila  SQL > aler table master_2 drop primary key;
+ERROR: 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'aler table master_2 drop primary key' at line 1
+
+ MySQL  localhost:3307 ssl  sakila  SQL > alter table master_2 drop primary key;
+Query OK, 0 rows affected (1.9488 sec)
+
+Records: 0  Duplicates: 0  Warnings: 0
+
+ MySQL  localhost:3307 ssl  sakila  SQL > show create table master_2;
++----------+--------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| Table    | Create Table                                                                                                                                                 |
++----------+--------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| master_2 | CREATE TABLE `master_2` (
+  `id_master` int(11) NOT NULL,
+  `nombre` varchar(10) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci |
++----------+--------------------------------------------------------------------------------------------------------------------------------------------------------------+
+1 row in set (0.0004 sec)
+
+ MySQL  localhost:3307 ssl  sakila  SQL > alter table master_2 add primary key(id_master, nombre);
+Query OK, 0 rows affected (0.7396 sec)
+
+Records: 0  Duplicates: 0  Warnings: 0
+
+ MySQL  localhost:3307 ssl  sakila  SQL > show create table master_2;
++----------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| Table    | Create Table                                                                                                                                                                                       |
++----------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+| master_2 | CREATE TABLE `master_2` (
+  `id_master` int(11) NOT NULL,
+  `nombre` varchar(10) NOT NULL,
+  PRIMARY KEY (`id_master`,`nombre`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci |
++----------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
+1 row in set (0.0004 sec)
+
+ MySQL  localhost:3307 ssl  sakila  SQL > create table detail_2(id_detail int key auto_increment, id_master int, nombre varchar(10), foreign key(id_master, nombre) references master_2(id_master, nombre));
+Query OK, 0 rows affected (0.3955 sec)
+
+ MySQL  localhost:3307 ssl  sakila  SQL > desc master_2;
++-----------+-------------+------+-----+---------+-------+
+| Field     | Type        | Null | Key | Default | Extra |
++-----------+-------------+------+-----+---------+-------+
+| id_master | int(11)     | NO   | PRI | NULL    |       |
+| nombre    | varchar(10) | NO   | PRI | NULL    |       |
++-----------+-------------+------+-----+---------+-------+
+2 rows in set (0.0582 sec)
+
+ MySQL  localhost:3307 ssl  sakila  SQL > desc detail_2;
++-----------+-------------+------+-----+---------+----------------+
+| Field     | Type        | Null | Key | Default | Extra          |
++-----------+-------------+------+-----+---------+----------------+
+| id_detail | int(11)     | NO   | PRI | NULL    | auto_increment |
+| id_master | int(11)     | YES  | MUL | NULL    |                |
+| nombre    | varchar(10) | YES  |     | NULL    |                |
++-----------+-------------+------+-----+---------+----------------+
+3 rows in set (0.0019 sec)
+
+ MySQL  localhost:3307 ssl  sakila  SQL > insert into master_2 values(1,'Hola'),(2,'Mundo'),(3,'Cruel');
+Query OK, 3 rows affected (0.1602 sec)
+
+Records: 3  Duplicates: 0  Warnings: 0
+
+ MySQL  localhost:3307 ssl  sakila  SQL > select * from master_2;
++-----------+--------+
+| id_master | nombre |
++-----------+--------+
+|         1 | Hola   |
+|         2 | Mundo  |
+|         3 | Cruel  |
++-----------+--------+
+3 rows in set (0.0005 sec)
+
+ MySQL  localhost:3307 ssl  sakila  SQL > insert into detail_2(id_master, nombre) values(1,'asdf');
+ERROR: 1452 (23000): Cannot add or update a child row: a foreign key constraint fails (`sakila`.`detail_2`, CONSTRAINT `detail_2_ibfk_1` FOREIGN KEY (`id_master`, `nombre`) REFERENCES `master_2` (`id_master`, `nombre`))
+
+ MySQL  localhost:3307 ssl  sakila  SQL > insert into detail_2(id_master, nombre) values(2,'Mundo');
+Query OK, 1 row affected (0.1692 sec)
+
+ MySQL  localhost:3307 ssl  sakila  SQL > select * from detail_2;
++-----------+-----------+--------+
+| id_detail | id_master | nombre |
++-----------+-----------+--------+
+|         2 |         2 | Mundo  |
++-----------+-----------+--------+
+1 row in set (0.0004 sec)
+
+ MySQL  localhost:3307 ssl  sakila  SQL > alter table detail_2 drop foreign key detail_2_ibfk_1;
+Query OK, 0 rows affected (0.0878 sec)
+
+Records: 0  Duplicates: 0  Warnings: 0
+
+ MySQL  localhost:3307 ssl  sakila  SQL > create table ventas_anuales(año date, cuarto enum(1,2,3,4), ventas totales decimal, primary key(año, cuarto));
+ERROR: 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '1,2,3,4), ventas totales decimal, primary key(a??o, cuarto))' at line 1
+
+ MySQL  localhost:3307 ssl  sakila  SQL > create table ventas_anuales(año date, cuarto enum(1,2,3,4), ventas_totales decimal, primary key(año, cuarto));
+ERROR: 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '1,2,3,4), ventas_totales decimal, primary key(a??o, cuarto))' at line 1
+
+ MySQL  localhost:3307 ssl  sakila  SQL > create table ventas_anuales(año date, cuarto enum('1','2','3','4'), ventas_totales decimal, primary key(año, cuarto));
+Query OK, 0 rows affected (0.3393 sec)
+
+ MySQL  localhost:3307 ssl  sakila  SQL > drop ventas_anuales;
+ERROR: 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'ventas_anuales' at line 1
+
+ MySQL  localhost:3307 ssl  sakila  SQL > drop table ventas_anuales;
+Query OK, 0 rows affected (0.4514 sec)
+
+ MySQL  localhost:3307 ssl  sakila  SQL > create table ventas_anuales(año year, cuarto enum('1','2','3','4'), ventas_totales decimal, primary key(año, cuarto));
+Query OK, 0 rows affected (0.3933 sec)
+
+ MySQL  localhost:3307 ssl  sakila  SQL > create table ordenes(clave int key auto_increment, año year, cuarto enum('1','2','3','4'), fecha date, foreign key(año, cuarto) references ventas_anuales(año, cuarto) on delete restrict on update cascade;
+ERROR: 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '' at line 1
+
+ MySQL  localhost:3307 ssl  sakila  SQL > create table ordenes(clave int key auto_increment, año year, cuarto enum('1','2','3','4'), fecha date, foreign key(año, cuarto) references ventas_anuales(año, cuarto) on delete restrict on update cascade);
+Query OK, 0 rows affected (1.0842 sec)
+
+ MySQL  localhost:3307 ssl  sakila  SQL >
